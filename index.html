@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="autumn">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@2.51.6/dist/full.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>Quelle trapp es-tu?</title>
+    <link rel="shortcut icon" href="oat.svg" />
+  </head>
+  <body>
+    <div class="fixed inset-0 flex items-center justify-center">
+      <div class="card w-96">
+        <div class="card-body">
+          <h1 class="font-nove text-primary uppercase mb-8 text-2xl">
+            Quelle trapp es-tu?
+          </h1>
+          <div class="flex flex-col items-center justify-center">
+            <label class="input-group">
+              <input
+                id="name"
+                class="border-2 rounded-md input input-ghost"
+                type="text"
+                placeholder="Ton prénom stp"
+                value=""
+              />
+              <button id="go-button" class="btn btn-accent">Go!</button>
+            </label>
+            <div id="beerInfo">
+              <div id="beer-details" class="hidden">
+                <h2 id="beer-name"></h2>
+                <p id="beer-description"></p>
+                <p id="beer-signification"></p>
+              </div>
+              <p id="error-message" class="text-error mt-2 hidden">
+                Tu n'as pas mis ton nom mdr
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      let nameInput = document.getElementById("name");
+      let goButton = document.getElementById("go-button");
+      let errorMessage = document.getElementById("error-message");
+      let beerDetails = document.getElementById("beer-details");
+      let beerName = document.getElementById("beer-name");
+      let beerDescription = document.getElementById("beer-description");
+      let beerSignification = document.getElementById("beer-signification");
+
+      const beers = [
+        {
+          name: "Leffe",
+          description: "c'est une fausse trappiste",
+          signification: "ta place est bel et bien en enfer",
+        },
+        {
+          name: "Chimay Bleue",
+          description:
+            "Bière brune forte aux arômes de fruits secs et de caramel, avec une amertume marquée",
+          signification:
+            ",sorry de te le dire, mais même si on t'affone volontiers, tu es toujours la personne qu'on regrette d'avoir ramené au réveil",
+        },
+        {
+          name: "Chimay Dorée",
+          description:
+            "Bière blonde légère et rafraîchissante, aux arômes de fruits et de miel",
+          signification:
+            "on peut te qualifier de roi ou reine de la nuit, on est heureux quand tu fais partie de la fête, par contre, tu es comme ton amie bleue, tu es toujours la personne qu'on regrette d'avoir ramené au réveil",
+        },
+        {
+          name: "Chimay Rouge",
+          description:
+            "Bière brune aux arômes fruités et épicés, avec une légère amertume",
+          signification:
+            "tout le monde t'affirmera que ramener un.e Charlotte aux fraises n'a rien d'excitant. Tu nous fais penser aux soirées entre 2006 ... la pédophilie, trop peu pour nous",
+        },
+        {
+          name: "Orval",
+          description:
+            "Bière blonde-rousse aux arômes floraux et fruités, avec une amertume prononcée",
+          signification:
+            "tu es une personne digne, peu pour moi de critiquer quelqu'un de la race supérieure",
+        },
+        {
+          name: "Rochefort 6",
+          description:
+            "Bière brune douce et fruitée, avec des notes de caramel et de fruits secs",
+          signification:
+            "tu es la personne gentille du groupe. Tout le monde t'aime, mais malheureusement, tu mouilles plus tes kellogs que les sous-vêtements. Tu gardes, malgré tout, inverser la balance en doublant ton alcoolémie.",
+        },
+        {
+          name: "Rochefort 8",
+          description:
+            "Bière brune aux arômes de fruits secs et de caramel, avec une amertume légère",
+          signification:
+            "la friendzone est ton amie. Entouré.e du sexe opposé, tu sais qu'il suffit d'attendre pour que le fruit tombe de l'arbre.",
+        },
+        {
+          name: "Rochefort 10",
+          description:
+            "Bière brune corsée aux arômes de fruits noirs et de caramel, avec une amertume marquée",
+          signification:
+            "Tu es le roi de la fête, mais attention qualité ne veut pas dire quantité. C'est bien d'avoir de l'ego, mais attention à savoir encore mettre ta tête dans la capuche de ta toge",
+        },
+        {
+          name: "Westmalle Double",
+          description:
+            "Bière brune aux arômes fruités et épicés, avec une amertume légère",
+          signification:
+            "tu es la personne qu'on décide de marier dans le jeu marier/tuer/baiser. Ton air innocent empêche les autres de te voir comme le fin baiseur que tu es",
+        },
+        {
+          name: "Westmalle Triple",
+          description:
+            "Bière blonde forte aux arômes de fruits et d'épices, avec une amertume marquée",
+          signification:
+            "tu es la personne qu'on décide de baiser dans le jeu marier/tuer/baiser. Mais comme cendrillon, tes partenaires passent de charmés à dégouté au réveil",
+        },
+        {
+          name: "Westvleteren 12",
+          description:
+            "Bière brune corsée aux arômes de fruits noirs et de caramel, avec une amertume marquée",
+          signification:
+            "tu es quelqu'un d'adoré, mais attention red flag car tu aimes regarder les gens dans le blanc des yeux et aspirer leur âme",
+        },
+        {
+          name: "Westvleteren 8",
+          description:
+            "Bière brune aux arômes de fruits secs et de caramel, avec une amertume légère",
+          signification:
+            "on entend d'ici ton venin se rependre. Selon toi, si aucune dinguerie ne se passe en ta présence, la vie ne mérite pas d'être vécue",
+        },
+        {
+          name: "Westvleteren Blond",
+          description:
+            "Bière blonde aux arômes fruités et épicés, avec une amertume légère",
+          signification:
+            "même si personne ne le sait, tu étais le dernier choisi à la gym. Malgré cela, c'est un plaisir de boire un verre avec toi en terrasse, car tu as toujours l'art de délier les langues",
+        },
+        {
+          name: "La Trappe Blond",
+          description:
+            "Bière blonde aux arômes de fruits et de miel, avec une amertume légère",
+          signification:
+            "tu es une personne sur qui on peut compter. Avec toi, pas de coup de putes. Mais attention, car tu as trop tendance à justifier tes conneries par ton signe astrologique",
+        },
+        {
+          name: "La Trappe Dubbel",
+          description:
+            "tu es une personne qu'on adorerait présenter à nos parents. Un peu bad boy/girl, ton sourire charmeur ",
+          signification:
+            "Tu ne vis que pour les caméras. Il te suffit de quelques verres et le monde entier est au courant des derniers ragots et de tes derniers plans culs",
+        },
+        {
+          name: "La Trappe Quadruple",
+          description:
+            "Bière brune forte et complexe, aux notes de caramel, de fruits foncés et de pain grillé.",
+          signification:
+            "Bien qu'une personne fascinante, ton surnom est quand même Satan ... Enjôleur, les coups de putes arrivent vite avec toi. Avec un chassé, on est à terre et plus moyen de retrouver ses souvenirs",
+        },
+      ];
+
+      const getBeer = () => {
+        let name = nameInput.value.trim();
+        if (name === "") {
+          showError();
+          return;
+        }
+        hideError();
+        const randomBeer = beers[Math.floor(Math.random() * beers.length)];
+        beerName.textContent = randomBeer.name;
+        beerDescription.textContent = `${name}, la bière qui te correspond est la ${randomBeer.name} dont voici la description: ${randomBeer.description}.`;
+        beerSignification.textContent = `Cela signifie que ${randomBeer.signification}.`;
+        showBeerDetails();
+      };
+
+      const showError = () => {
+        errorMessage.classList.remove("hidden");
+      };
+
+      const hideError = () => {
+        errorMessage.classList.add("hidden");
+      };
+
+      const showBeerDetails = () => {
+        beerDetails.classList.remove("hidden");
+      };
+
+      goButton.addEventListener("click", getBeer);
+      nameInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          getBeer();
+        }
+      });
+
+      nameInput.focus();
+    </script>
+  </body>
+</html>
